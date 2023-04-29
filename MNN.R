@@ -49,14 +49,45 @@ view(uow_consumptions_inputs_20th_io_3)
 view(uow_consumptions_inputs_20th_io_4)
 
 # Normalize I/O matrices
-uow_consumptions_inputs_20th_io_1 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_1, normalize))
-uow_consumptions_inputs_20th_io_2 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_2, normalize))
-uow_consumptions_inputs_20th_io_3 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_3, normalize))
-uow_consumptions_inputs_20th_io_4 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_4, normalize))
+uow_consumptions_inputs_20th_io_1_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_1, normalize))
+uow_consumptions_inputs_20th_io_2_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_2, normalize))
+uow_consumptions_inputs_20th_io_3_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_3, normalize))
+uow_consumptions_inputs_20th_io_4_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_4, normalize))
 
 # ----------------- NN Implementation -----------------
-uow_consumptions_inputs_20th_io_1_train = uow_consumptions_inputs_20th_io_1[1: 350, ]
-uow_consumptions_inputs_20th_io_1_test = uow_consumptions_inputs_20th_io_1[351: 463, ]
 
-uow_consumptions_inputs_20th_io_1_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = 5, data = uow_consumptions_inputs_20th_io_1_train, linear.output = TRUE)
-plot(uow_consumptions_inputs_20th_io_1_model)
+uow_consumptions_inputs_20th_io_1_norm_train = uow_consumptions_inputs_20th_io_1_norm[1: 350, ]
+uow_consumptions_inputs_20th_io_1_norm_test = uow_consumptions_inputs_20th_io_1_norm[351: 463, ]
+
+# Train NN model
+uow_consumptions_inputs_20th_io_1_norm_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(10,8,6), data = uow_consumptions_inputs_20th_io_1_norm_train, stepmax = 1e+10, learningrate = 0.0001)
+plot(uow_consumptions_inputs_20th_io_1_norm_train_model)
+
+# Test NN model
+model_result <- compute(uow_consumptions_inputs_20th_io_1_norm_train_model, uow_consumptions_inputs_20th_io_1_norm_test)
+model_result$net.result
+model_result$neurons
+
+# Not normalized test data set
+original_train_data <- uow_consumptions_inputs_20th_io_1[1: 350, "original"]
+original_test_data <- uow_consumptions_inputs_20th_io_1[351: 463, "original"]
+#view(original_test_data)
+
+original_train_data_min <- min(original_train_data)
+original_train_data_max <- max(original_train_data)
+
+predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
+#view(predicted_data)
+
+# RMSE evaluation
+rmse1 <- function(error)
+{
+  sqrt(mean(error^2))
+}
+
+error <- (original_test_data - predicted_data)
+pred_RMSE <- rmse1(error)
+
+par(mfrow=c(1,1))
+plot(original_test_data, predicted_data, col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
+abline(a=0, b=1, h=90, v=90)
