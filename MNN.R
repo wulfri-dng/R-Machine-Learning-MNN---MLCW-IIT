@@ -1,3 +1,5 @@
+library(neuralnet)
+
 uow_consumptions <- read_excel("D:\\Coding Area\\University Projects\\Courseworks\\R-Machine-Learning-MNN---MLCW-IIT\\uow_consumption.xlsx")
 
 # ----------------- Data Pre-processing -----------------
@@ -47,9 +49,14 @@ view(uow_consumptions_inputs_20th_io_3)
 view(uow_consumptions_inputs_20th_io_4)
 
 # Normalize I/O matrices
-uow_consumptions_inputs_20th_io_1_norm = as.data.frame(lapply(uow_consumptions_inputs_20th_io_1, normalize))
-uow_consumptions_inputs_20th_io_2_norm = as.data.frame(lapply(uow_consumptions_inputs_20th_io_2, normalize))
-uow_consumptions_inputs_20th_io_3_norm = as.data.frame(lapply(uow_consumptions_inputs_20th_io_3, normalize))
-uow_consumptions_inputs_20th_io_4_norm = as.data.frame(lapply(uow_consumptions_inputs_20th_io_4, normalize))
+uow_consumptions_inputs_20th_io_1 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_1, normalize))
+uow_consumptions_inputs_20th_io_2 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_2, normalize))
+uow_consumptions_inputs_20th_io_3 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_3, normalize))
+uow_consumptions_inputs_20th_io_4 <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_4, normalize))
 
 # ----------------- NN Implementation -----------------
+uow_consumptions_inputs_20th_io_1_train = uow_consumptions_inputs_20th_io_1[1: 350, ]
+uow_consumptions_inputs_20th_io_1_test = uow_consumptions_inputs_20th_io_1[351: 463, ]
+
+uow_consumptions_inputs_20th_io_1_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = 5, data = uow_consumptions_inputs_20th_io_1_train, linear.output = TRUE)
+plot(uow_consumptions_inputs_20th_io_1_model)
