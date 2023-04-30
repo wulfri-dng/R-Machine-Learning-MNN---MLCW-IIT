@@ -101,13 +101,21 @@ uow_consumptions_inputs_20th_norm_io_4_test <- uow_consumptions_inputs_20th_norm
 # ---- Train NN models ----
 
 # NN model - 1
-uow_consumptions_inputs_20th_norm_io_1_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.0001, linear.output = TRUE)
+uow_consumptions_inputs_20th_norm_io_1_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10, 5), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.01, linear.output = FALSE)
+# https://www.rdocumentation.org/packages/neuralnet/versions/1.44.2/topics/neuralnet
+# https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
 
 # NN model - 2
-uow_consumptions_inputs_20th_norm_io_1_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.0001, linear.output = TRUE)
+uow_consumptions_inputs_20th_norm_io_1_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", learningrate = 0.01, linear.output = FALSE)
+
+# NN model - 3
+uow_consumptions_inputs_20th_norm_io_1_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, algorithm = "backprop+", linear.output = FALSE)
+
+# NN model - 4
+uow_consumptions_inputs_20th_norm_io_1_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, algorithm = "backprop", learningrate = 0.01, linear.output = FALSE)
 
 # Test NN model and un-normalize predicted data
-model_result <- neuralnet::compute(uow_consumptions_inputs_20th_norm_io_1_train_model, uow_consumptions_inputs_20th_norm_io_1_test)
+model_result <- neuralnet::compute(uow_consumptions_inputs_20th_norm_io_1_train_model_4, uow_consumptions_inputs_20th_norm_io_1_test)
 predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
 
 par(mfrow=c(1,1))
@@ -116,12 +124,16 @@ abline(a=0, b=1, h=90, v=90)
 
 # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
 rmse_value = calculate_rmse(data.matrix(original_test_data), predicted_data)
+print(rmse_value)
 
 # MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
 mae_value = mae(data.matrix(original_test_data), predicted_data)
+print(mae_value)
 
 # MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
 mape_value = calculate_mape(data.matrix(original_test_data), predicted_data)
+print(mape_value)
 
 # sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
 smape_value = smape(data.matrix(original_test_data), predicted_data)
+print(smape_value)
