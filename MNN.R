@@ -1,3 +1,5 @@
+library(readxl) # readxl package used to import excel files
+library(dplyr)
 library(neuralnet)
 
 uow_consumptions <- read_excel("D:\\Coding Area\\University Projects\\Courseworks\\R-Machine-Learning-MNN---MLCW-IIT\\uow_consumption.xlsx")
@@ -15,7 +17,7 @@ unnormalize <- function(x, min, max) {
 }
 
 # Only keep the data from 20th hour column
-uow_consumptions_inputs_20th = uow_consumptions[-c(1: 3)]
+uow_consumptions_inputs_20th <- uow_consumptions[-c(1: 3)]
 
 # Creating lags
 lag1 = lag(uow_consumptions_inputs_20th,1)
@@ -43,10 +45,10 @@ uow_consumptions_inputs_20th_io_2 <- uow_consumptions_inputs_20th_io_2[complete.
 uow_consumptions_inputs_20th_io_3 <- uow_consumptions_inputs_20th_io_3[complete.cases(uow_consumptions_inputs_20th_io_3),]
 uow_consumptions_inputs_20th_io_4 <- uow_consumptions_inputs_20th_io_4[complete.cases(uow_consumptions_inputs_20th_io_4),]
 
-view(uow_consumptions_inputs_20th_io_1)
-view(uow_consumptions_inputs_20th_io_2)
-view(uow_consumptions_inputs_20th_io_3)
-view(uow_consumptions_inputs_20th_io_4)
+View(uow_consumptions_inputs_20th_io_1)
+View(uow_consumptions_inputs_20th_io_2)
+View(uow_consumptions_inputs_20th_io_3)
+View(uow_consumptions_inputs_20th_io_4)
 
 # Normalize I/O matrices
 uow_consumptions_inputs_20th_io_1_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th_io_1, normalize))
@@ -60,7 +62,7 @@ uow_consumptions_inputs_20th_io_1_norm_train = uow_consumptions_inputs_20th_io_1
 uow_consumptions_inputs_20th_io_1_norm_test = uow_consumptions_inputs_20th_io_1_norm[351: 463, ]
 
 # Train NN model
-uow_consumptions_inputs_20th_io_1_norm_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(10,8,6), data = uow_consumptions_inputs_20th_io_1_norm_train, stepmax = 1e+10, learningrate = 0.0001)
+uow_consumptions_inputs_20th_io_1_norm_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(45, 30, 15), data = uow_consumptions_inputs_20th_io_1_norm_train, stepmax = 1e+10, learningrate = 0.0001)
 plot(uow_consumptions_inputs_20th_io_1_norm_train_model)
 
 # Test NN model
