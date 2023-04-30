@@ -66,7 +66,7 @@ uow_consumptions_inputs_20th_io_1_norm_train_model <- neuralnet(original ~ t1 + 
 plot(uow_consumptions_inputs_20th_io_1_norm_train_model)
 
 # Test NN model
-model_result <- compute(uow_consumptions_inputs_20th_io_1_norm_train_model, uow_consumptions_inputs_20th_io_1_norm_test)
+model_result <- neuralnet::compute(uow_consumptions_inputs_20th_io_1_norm_train_model, uow_consumptions_inputs_20th_io_1_norm_test)
 model_result$net.result
 model_result$neurons
 
