@@ -1,6 +1,7 @@
 library(readxl) # readxl package used to import excel files
 library(dplyr)
 library(neuralnet)
+library(Metrics) # For MAE evaluation
 
 uow_consumptions <- read_excel("D:\\Coding Area\\University Projects\\Courseworks\\R-Machine-Learning-MNN---MLCW-IIT\\uow_consumption.xlsx")
 
@@ -11,9 +12,19 @@ normalize <- function(x) {
   return((x - min(x)) / (max(x) - min(x)))
 }
 
-# Function to unnormalize data
-unnormalize <- function(x, min, max) { 
+# Function to un-normalize data
+unnormalize <- function(x, min, max) {
   return( (max - min)*x + min )
+}
+
+# MAPE calculator
+calculate_mape <- function(actual, predicted) {
+  return (mean(abs((actual-predicted)/actual)) * 100)
+}
+
+# RMSE calculator
+calculate_rmse <- function(actual, predicted) {
+  sqrt(mean((actual - predicted)^2))
 }
 
 # Only keep the data from 20th hour column
@@ -21,6 +32,13 @@ uow_consumptions_inputs_20th <- uow_consumptions[-c(1: 3)]
 
 # Normalize the full data set
 uow_consumptions_inputs_20th_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th, normalize))
+
+# Not normalized data sets (For un-normalize step)
+original_train_data <- uow_consumptions_inputs_20th[1: 380,]
+original_test_data <- uow_consumptions_inputs_20th[381: 463,]
+
+original_train_data_min <- min(original_train_data)
+original_train_data_max <- max(original_train_data)
 
 # Divide testing and training data sets
 uow_consumptions_inputs_20th_norm_train <- uow_consumptions_inputs_20th_norm[1: 380, ]
@@ -80,36 +98,30 @@ uow_consumptions_inputs_20th_norm_io_4_test <- uow_consumptions_inputs_20th_norm
 
 # ----------------- NN Implementation -----------------
 
-# Train NN model
-uow_consumptions_inputs_20th_norm_io_1_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10, 5), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.0001, linear.output = TRUE)
-plot(uow_consumptions_inputs_20th_norm_io_1_train_model)
+# ---- Train NN models ----
 
-# Test NN model
+# NN model - 1
+uow_consumptions_inputs_20th_norm_io_1_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.0001, linear.output = TRUE)
+
+# NN model - 2
+uow_consumptions_inputs_20th_norm_io_1_train_model <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.0001, linear.output = TRUE)
+
+# Test NN model and un-normalize predicted data
 model_result <- neuralnet::compute(uow_consumptions_inputs_20th_norm_io_1_train_model, uow_consumptions_inputs_20th_norm_io_1_test)
-model_result$net.result
-model_result$neurons
-
-# Not normalized test data set
-original_train_data <- uow_consumptions_inputs_20th[1: 380,]
-original_test_data <- uow_consumptions_inputs_20th[381: 463,]
-View()
-data.matrix(original_test_data)
-
-original_train_data_min <- min(original_train_data)
-original_train_data_max <- max(original_train_data)
-
 predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
-#view(predicted_data)
-
-# RMSE evaluation
-rmse1 <- function(error)
-{
-  sqrt(mean(error^2))
-}
-
-error <- (data.matrix(original_test_data) - predicted_data)
-pred_RMSE <- rmse1(error)
 
 par(mfrow=c(1,1))
 plot(data.matrix(original_test_data), predicted_data, col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
 abline(a=0, b=1, h=90, v=90)
+
+# RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
+rmse_value = calculate_rmse(data.matrix(original_test_data), predicted_data)
+
+# MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
+mae_value = mae(data.matrix(original_test_data), predicted_data)
+
+# MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
+mape_value = calculate_mape(data.matrix(original_test_data), predicted_data)
+
+# sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
+smape_value = smape(data.matrix(original_test_data), predicted_data)
