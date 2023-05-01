@@ -91,11 +91,17 @@ columns = c("Model Name", "RMSE", "MAE", "MAPE", "sMAPE", "Training data set","H
 comparison_table <- data.frame(matrix(nrow = 0, ncol = length(columns))) 
 colnames(comparison_table) <- columns
 
-# Update comparison table
-insert_comparison_table_row <- function(model, model_name_str, training_data_set, hidden_layer_count, act_func, isLinear, algorithm, testing_data, actual_data) {
+get_predicted_data_from_nn_model <- function(model, testing_data) {
   # Test NN model and un-normalize predicted data
   model_result <- neuralnet::compute(model, testing_data)
   predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
+  
+  return(predicted_data)
+}
+
+# Update comparison table
+insert_comparison_table_row <- function(model, model_name_str, training_data_set, hidden_layer_count, act_func, isLinear, algorithm, testing_data, actual_data) {
+  predicted_data <- get_predicted_data_from_nn_model(model, testing_data)
   
   # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
   rmse_value = calculate_rmse(data.matrix(actual_data), predicted_data)
@@ -175,8 +181,9 @@ insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_4_train_model_2
 
 View(comparison_table)
 
+# Graphical representation - Best performed NN model
 par(mfrow=c(1,1))
-plot(data.matrix(original_test_data), predicted_data, col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
+plot(data.matrix(original_test_data), get_predicted_data_from_nn_model(uow_consumptions_inputs_20th_norm_io_1_train_model_4, uow_consumptions_inputs_20th_norm_io_1_test), col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
 abline(a=0, b=1, h=90, v=90)
 
-
+plot(uow_consumptions_inputs_20th_norm_io_1_train_model_4)
