@@ -100,40 +100,87 @@ uow_consumptions_inputs_20th_norm_io_4_test <- uow_consumptions_inputs_20th_norm
 
 # ---- Train NN models ----
 
-# NN model - 1
-uow_consumptions_inputs_20th_norm_io_1_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10, 5), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", learningrate = 0.01, linear.output = FALSE)
 # https://www.rdocumentation.org/packages/neuralnet/versions/1.44.2/topics/neuralnet
 # https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
 
-# NN model - 2
-uow_consumptions_inputs_20th_norm_io_1_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", learningrate = 0.01, linear.output = FALSE)
+# NN model - 1 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(5), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
 
-# NN model - 3
-uow_consumptions_inputs_20th_norm_io_1_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, algorithm = "backprop+", linear.output = FALSE)
+# NN model - 2 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
 
-# NN model - 4
-uow_consumptions_inputs_20th_norm_io_1_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(15, 10), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, algorithm = "backprop", learningrate = 0.01, linear.output = FALSE)
+# NN model - 3 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(6, 4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
 
-# Test NN model and un-normalize predicted data
-model_result <- neuralnet::compute(uow_consumptions_inputs_20th_norm_io_1_train_model_4, uow_consumptions_inputs_20th_norm_io_1_test)
-predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
+# NN model - 4 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 5 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_5 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, algorithm = "backprop", learningrate=0.001, linear.output = FALSE)
+
+# NN model - 6 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_1 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_2_train, linear.output = TRUE)
+
+# NN model - 7 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_2 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 8 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_3 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 9 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_4 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 10 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_3_train, linear.output = TRUE)
+
+# NN model - 11 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 12 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 13 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+
+# NN model - 14 (4th train set)
+uow_consumptions_inputs_20th_norm_io_4_train_model_1 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(3), data = uow_consumptions_inputs_20th_norm_io_4_train, linear.output = TRUE)
+
+# NN model - 15 (4th train set)
+uow_consumptions_inputs_20th_norm_io_4_train_model_2 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(2, 2), data = uow_consumptions_inputs_20th_norm_io_4_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+
+# Create the comparison table
+columns = c("Model Name", "RMSE", "MAE", "MAPE", "sMAPE", "Training data set","Hidden layers", "Activation function", "Linear", "Algorithm") 
+comparison_table <- data.frame(matrix(nrow = 0, ncol = length(columns))) 
+colnames(comparison_table) <- columns
+
+# Update comparison table
+insert_comparison_table_row <- function(model, model_name_str, training_data_set, hidden_layer_count, act_func, isLinear, algorithm, testing_data, actual_data) {
+  # Test NN model and un-normalize predicted data
+  model_result <- neuralnet::compute(model, testing_data)
+  predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
+
+  # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
+  rmse_value = calculate_rmse(data.matrix(actual_data), predicted_data)
+  
+  # MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
+  mae_value = mae(data.matrix(actual_data), predicted_data)
+  
+  # MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
+  mape_value = calculate_mape(data.matrix(actual_data), predicted_data)
+  
+  # sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
+  smape_value = smape(data.matrix(actual_data), predicted_data)
+  
+  comparison_table[nrow(comparison_table) + 1,] <<- c(model_name_str, rmse_value, mae_value, mape_value, smape_value, training_data_set, hidden_layer_count, act_func, isLinear, algorithm)
+}
+
+# Insert data to comparison table
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_1, "uow_consumptions_inputs_20th_norm_io_1_train_model_1", "Set 1", 1, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+View(comparison_table)
 
 par(mfrow=c(1,1))
 plot(data.matrix(original_test_data), predicted_data, col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
 abline(a=0, b=1, h=90, v=90)
 
-# RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
-rmse_value = calculate_rmse(data.matrix(original_test_data), predicted_data)
-print(rmse_value)
 
-# MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
-mae_value = mae(data.matrix(original_test_data), predicted_data)
-print(mae_value)
-
-# MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
-mape_value = calculate_mape(data.matrix(original_test_data), predicted_data)
-print(mape_value)
-
-# sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
-smape_value = smape(data.matrix(original_test_data), predicted_data)
-print(smape_value)
