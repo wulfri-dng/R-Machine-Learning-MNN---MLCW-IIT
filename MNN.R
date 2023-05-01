@@ -103,51 +103,6 @@ uow_consumptions_inputs_20th_norm_io_4_test <- uow_consumptions_inputs_20th_norm
 # https://www.rdocumentation.org/packages/neuralnet/versions/1.44.2/topics/neuralnet
 # https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
 
-# NN model - 1 (1st train set)
-uow_consumptions_inputs_20th_norm_io_1_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(5), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
-
-# NN model - 2 (1st train set)
-uow_consumptions_inputs_20th_norm_io_1_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
-
-# NN model - 3 (1st train set)
-uow_consumptions_inputs_20th_norm_io_1_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(6, 4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 4 (1st train set)
-uow_consumptions_inputs_20th_norm_io_1_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 5 (1st train set)
-uow_consumptions_inputs_20th_norm_io_1_train_model_5 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, algorithm = "backprop", learningrate=0.001, linear.output = FALSE)
-
-# NN model - 6 (2nd train set)
-uow_consumptions_inputs_20th_norm_io_2_train_model_1 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_2_train, linear.output = TRUE)
-
-# NN model - 7 (2nd train set)
-uow_consumptions_inputs_20th_norm_io_2_train_model_2 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 8 (2nd train set)
-uow_consumptions_inputs_20th_norm_io_2_train_model_3 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 9 (2nd train set)
-uow_consumptions_inputs_20th_norm_io_2_train_model_4 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 10 (3rd train set)
-uow_consumptions_inputs_20th_norm_io_3_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_3_train, linear.output = TRUE)
-
-# NN model - 11 (3rd train set)
-uow_consumptions_inputs_20th_norm_io_3_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 12 (3rd train set)
-uow_consumptions_inputs_20th_norm_io_3_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 13 (3rd train set)
-uow_consumptions_inputs_20th_norm_io_3_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
-
-# NN model - 14 (4th train set)
-uow_consumptions_inputs_20th_norm_io_4_train_model_1 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(3), data = uow_consumptions_inputs_20th_norm_io_4_train, linear.output = TRUE)
-
-# NN model - 15 (4th train set)
-uow_consumptions_inputs_20th_norm_io_4_train_model_2 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(2, 2), data = uow_consumptions_inputs_20th_norm_io_4_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-
 # Create the comparison table
 columns = c("Model Name", "RMSE", "MAE", "MAPE", "sMAPE", "Training data set","Hidden layers", "Activation function", "Linear", "Algorithm") 
 comparison_table <- data.frame(matrix(nrow = 0, ncol = length(columns))) 
@@ -158,7 +113,7 @@ insert_comparison_table_row <- function(model, model_name_str, training_data_set
   # Test NN model and un-normalize predicted data
   model_result <- neuralnet::compute(model, testing_data)
   predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
-
+  
   # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
   rmse_value = calculate_rmse(data.matrix(actual_data), predicted_data)
   
@@ -174,8 +129,66 @@ insert_comparison_table_row <- function(model, model_name_str, training_data_set
   comparison_table[nrow(comparison_table) + 1,] <<- c(model_name_str, rmse_value, mae_value, mape_value, smape_value, training_data_set, hidden_layer_count, act_func, isLinear, algorithm)
 }
 
+# NN model - 1 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(5), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
 # Insert data to comparison table
 insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_1, "uow_consumptions_inputs_20th_norm_io_1_train_model_1", "Set 1", 1, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+# NN model - 2 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_2, "uow_consumptions_inputs_20th_norm_io_1_train_model_2", "Set 1", 2, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+# NN model - 3 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(6, 4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_3, "uow_consumptions_inputs_20th_norm_io_1_train_model_3", "Set 1", 3, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+# NN model - 4 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_4, "uow_consumptions_inputs_20th_norm_io_1_train_model_4", "Set 1", 2, "logistic", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+# NN model - 5 (1st train set)
+uow_consumptions_inputs_20th_norm_io_1_train_model_5 <- neuralnet(original ~ t1 + t2 + t3 + t4 + t7, hidden = c(4, 2), data = uow_consumptions_inputs_20th_norm_io_1_train, act.fct = "tanh", stepmax=1e7, algorithm = "backprop", learningrate=0.001, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_1_train_model_5, "uow_consumptions_inputs_20th_norm_io_1_train_model_5", "Set 1", 2, "tanh", FALSE, "backprop", uow_consumptions_inputs_20th_norm_io_1_test, original_test_data)
+
+# NN model - 6 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_1 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_2_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_2_train_model_1, "uow_consumptions_inputs_20th_norm_io_2_train_model_1", "Set 2", 1, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_2_test, original_test_data)
+
+# NN model - 7 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_2 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_2_train_model_2, "uow_consumptions_inputs_20th_norm_io_2_train_model_2", "Set 2", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_2_test, original_test_data)
+
+# NN model - 8 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_3 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_2_train_model_3, "uow_consumptions_inputs_20th_norm_io_2_train_model_3", "Set 2", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_2_test, original_test_data)
+
+# NN model - 9 (2nd train set)
+uow_consumptions_inputs_20th_norm_io_2_train_model_4 <- neuralnet(original ~ t2 + t3 + t4 + t7, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_2_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_2_train_model_4, "uow_consumptions_inputs_20th_norm_io_2_train_model_4", "Set 2", 2, "logistic", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_2_test, original_test_data)
+
+# NN model - 10 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_1 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4), data = uow_consumptions_inputs_20th_norm_io_3_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_3_train_model_1, "uow_consumptions_inputs_20th_norm_io_3_train_model_1", "Set 3", 1, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_3_test, original_test_data)
+
+# NN model - 11 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_2 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_3_train_model_2, "uow_consumptions_inputs_20th_norm_io_3_train_model_2", "Set 3", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_3_test, original_test_data)
+
+# NN model - 12 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_3 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(4, 3), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_3_train_model_3, "uow_consumptions_inputs_20th_norm_io_3_train_model_3", "Set 3", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_3_test, original_test_data)
+
+# NN model - 13 (3rd train set)
+uow_consumptions_inputs_20th_norm_io_3_train_model_4 <- neuralnet(original ~ t1 + t2 + t3 + t4, hidden = c(3, 2), data = uow_consumptions_inputs_20th_norm_io_3_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_3_train_model_4, "uow_consumptions_inputs_20th_norm_io_3_train_model_4", "Set 3", 2, "logistic", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_3_test, original_test_data)
+
+# NN model - 14 (4th train set)
+uow_consumptions_inputs_20th_norm_io_4_train_model_1 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(3), data = uow_consumptions_inputs_20th_norm_io_4_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_4_train_model_1, "uow_consumptions_inputs_20th_norm_io_4_train_model_1", "Set 4", 1, "None", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_4_test, original_test_data)
+
+# NN model - 15 (4th train set)
+uow_consumptions_inputs_20th_norm_io_4_train_model_2 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(2, 2), data = uow_consumptions_inputs_20th_norm_io_4_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_4_train_model_2, "uow_consumptions_inputs_20th_norm_io_4_train_model_2", "Set 4", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_4_test, original_test_data)
 
 View(comparison_table)
 
