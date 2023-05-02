@@ -37,26 +37,14 @@ uow_consumptions_inputs_18th_norm <- as.data.frame(lapply(uow_consumptions_input
 uow_consumptions_inputs_19th_norm <- as.data.frame(lapply(uow_consumptions_inputs_19th, normalize))
 uow_consumptions_inputs_20th_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th, normalize))
 
-# Not normalized 20th hour data sets (For un-normalize step)
+# Not normalized 20th hour data sets (For evaluations)
 original_train_data <- uow_consumptions_inputs_20th[1: 380,]
 original_test_data <- uow_consumptions_inputs_20th[381: 470,]
 
-original_train_data_min <- min(original_train_data)
-original_train_data_max <- max(original_train_data)
+original_train_data_min <- min(uow_consumptions_inputs_20th)
+original_train_data_max <- max(uow_consumptions_inputs_20th)
 
 # Creating lags for the data sets
-lag_18_1 = lag(uow_consumptions_inputs_18th_norm, 1)
-lag_18_2 = lag(uow_consumptions_inputs_18th_norm, 2)
-lag_18_3 = lag(uow_consumptions_inputs_18th_norm, 3)
-lag_18_4 = lag(uow_consumptions_inputs_18th_norm, 4)
-lag_18_7 = lag(uow_consumptions_inputs_18th_norm, 7)
-
-lag_19_1 = lag(uow_consumptions_inputs_19th_norm, 1)
-lag_19_2 = lag(uow_consumptions_inputs_19th_norm, 2)
-lag_19_3 = lag(uow_consumptions_inputs_19th_norm, 3)
-lag_19_4 = lag(uow_consumptions_inputs_19th_norm, 4)
-lag_19_7 = lag(uow_consumptions_inputs_19th_norm, 7)
-
 lag_20_1 = lag(uow_consumptions_inputs_20th_norm, 1)
 lag_20_2 = lag(uow_consumptions_inputs_20th_norm, 2)
 lag_20_3 = lag(uow_consumptions_inputs_20th_norm, 3)
@@ -64,15 +52,16 @@ lag_20_4 = lag(uow_consumptions_inputs_20th_norm, 4)
 lag_20_7 = lag(uow_consumptions_inputs_20th_norm, 7)
 
 # Create time-delayed I/O metrics for the data set
-uow_consumptions_inputs_norm_io_1 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_2, lag_20_3, lag_20_4, lag_20_7, lag_19_1, lag_19_2, lag_19_3, lag_19_4, lag_19_7, lag_18_1, lag_18_2, lag_18_3, lag_18_4, lag_18_7)
-colnames(uow_consumptions_inputs_norm_io_1) <- c("original", "t120", "t220", "t320", "t420", "t720", "t119", "t219", "t319", "t419", "t719", "t118", "t218", "t318", "t418", "t718")
+uow_consumptions_inputs_norm_io_1 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_2, lag_20_3, lag_20_4, lag_20_7, uow_consumptions_inputs_19th_norm, uow_consumptions_inputs_18th_norm)
+colnames(uow_consumptions_inputs_norm_io_1) <- c("original", "t120", "t220", "t320", "t420", "t720", "t19", "t18")
 
-uow_consumptions_inputs_norm_io_2 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_4, lag_20_7, lag_19_1, lag_19_4, lag_19_7, lag_18_1, lag_18_4, lag_18_7)
-colnames(uow_consumptions_inputs_norm_io_2) <- c("original", "t120", "t420","t720", "t119", "t419","t719", "t118", "t418","t718")
+uow_consumptions_inputs_norm_io_2 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_4, lag_20_7, uow_consumptions_inputs_19th_norm, uow_consumptions_inputs_18th_norm)
+colnames(uow_consumptions_inputs_norm_io_2) <- c("original", "t120", "t420","t720", "t19", "t18")
 
-uow_consumptions_inputs_norm_io_3 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_2, lag_20_3, lag_20_4, lag_20_7, lag_19_1, lag_19_7, lag_18_1, lag_18_7)
-colnames(uow_consumptions_inputs_norm_io_3) <- c("original", "t120", "t220", "t320", "t420", "t720", "t119", "t719", "t118", "t718")
+uow_consumptions_inputs_norm_io_3 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_7, uow_consumptions_inputs_19th_norm, uow_consumptions_inputs_18th_norm)
+colnames(uow_consumptions_inputs_norm_io_3) <- c("original", "t120", "t720", "t19", "t18")
 
+View(uow_consumptions_inputs_norm_io_3)
 # Formatting time-delayed I/O metrics training data set removing N/As
 uow_consumptions_inputs_norm_io_1 <- uow_consumptions_inputs_norm_io_1[complete.cases(uow_consumptions_inputs_norm_io_1),]
 uow_consumptions_inputs_norm_io_2 <- uow_consumptions_inputs_norm_io_2[complete.cases(uow_consumptions_inputs_norm_io_2),]
@@ -124,35 +113,35 @@ insert_comparison_table_row <- function(model, model_name_str, training_data_set
 }
 
 # NN model - 1 (1st train set)
-uow_consumptions_inputs_norm_io_1_train_model_1 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t119 + t219 + t319 + t419 + t719 + t118 + t218 + t318 + t418 + t718", hidden = c(7, 4, 3, 2), data = uow_consumptions_inputs_norm_io_1_train, linear.output = TRUE)
+uow_consumptions_inputs_norm_io_1_train_model_1 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t19 + t18", hidden = c(4, 2, 2), data = uow_consumptions_inputs_norm_io_1_train, linear.output = TRUE)
 # Insert data into comparison table
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_1_train_model_1, "uow_consumptions_inputs_norm_io_1_train_model_1", "Set 1", 4, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_1_test, original_test_data)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_1_train_model_1, "uow_consumptions_inputs_norm_io_1_train_model_1", "Set 1", 3, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_1_test, original_test_data)
 
 # NN model - 2 (1st train set)
-uow_consumptions_inputs_norm_io_1_train_model_2 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t119 + t219 + t319 + t419 + t719 + t118 + t218 + t318 + t418 + t718", hidden = c(10, 6), data = uow_consumptions_inputs_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+uow_consumptions_inputs_norm_io_1_train_model_2 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t19 + t18", hidden = c(5, 3), data = uow_consumptions_inputs_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
 insert_comparison_table_row(uow_consumptions_inputs_norm_io_1_train_model_2, "uow_consumptions_inputs_norm_io_1_train_model_2", "Set 1", 2, "logistic", FALSE, "Default", uow_consumptions_inputs_norm_io_1_test, original_test_data)
 
 # NN model - 3 (2nd train set)
-uow_consumptions_inputs_norm_io_2_train_model_1 <- neuralnet("original ~ t120 + t420 + t720 + t119 + t419 + t719 + t118 + t418 + t718", hidden = c(5, 3, 2), data = uow_consumptions_inputs_norm_io_2_train, linear.output = TRUE)
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_2_train_model_1, "uow_consumptions_inputs_norm_io_2_train_model_1", "Set 2", 3, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_2_test, original_test_data)
+uow_consumptions_inputs_norm_io_2_train_model_1 <- neuralnet("original ~ t120 + t420 + t720 + t19 + t18", hidden = c(4, 2), data = uow_consumptions_inputs_norm_io_2_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_2_train_model_1, "uow_consumptions_inputs_norm_io_2_train_model_1", "Set 2", 2, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_2_test, original_test_data)
 
 # NN model - 4 (2nd train set)
-uow_consumptions_inputs_norm_io_2_train_model_2 <- neuralnet("original ~ t120 + t420 + t720 + t119 + t419 + t719 + t118 + t418 + t718", hidden = c(7, 3), data = uow_consumptions_inputs_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_2_train_model_2, "uow_consumptions_inputs_norm_io_2_train_model_2", "Set 2", 2, "tanh", FALSE, "Default", uow_consumptions_inputs_norm_io_2_test, original_test_data)
+uow_consumptions_inputs_norm_io_2_train_model_2 <- neuralnet("original ~ t120 + t420 + t720 + t19 + t18", hidden = c(5), data = uow_consumptions_inputs_norm_io_2_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_2_train_model_2, "uow_consumptions_inputs_norm_io_2_train_model_2", "Set 2", 1, "tanh", FALSE, "Default", uow_consumptions_inputs_norm_io_2_test, original_test_data)
 
 # NN model - 5 (3rd train set)
-uow_consumptions_inputs_norm_io_3_train_model_1 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t119 + t719 + t118 + t718", hidden = c(5, 3, 2), data = uow_consumptions_inputs_norm_io_3_train, linear.output = TRUE)
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_3_train_model_1, "uow_consumptions_inputs_norm_io_3_train_model_1", "Set 3", 3, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_3_test, original_test_data)
+uow_consumptions_inputs_norm_io_3_train_model_1 <- neuralnet("original ~ t120 + t720 + t19 + t18", hidden = c(3, 2), data = uow_consumptions_inputs_norm_io_3_train, linear.output = TRUE)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_3_train_model_1, "uow_consumptions_inputs_norm_io_3_train_model_1", "Set 3", 2, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_3_test, original_test_data)
 
 # NN model - 6 (3rd train set)
-uow_consumptions_inputs_norm_io_3_train_model_2 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t119 + t719 + t118 + t718", hidden = c(6, 4), data = uow_consumptions_inputs_norm_io_3_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_3_train_model_2, "uow_consumptions_inputs_norm_io_3_train_model_2", "Set 3", 2, "logistic", FALSE, "Default", uow_consumptions_inputs_norm_io_3_test, original_test_data)
+uow_consumptions_inputs_norm_io_3_train_model_2 <- neuralnet("original ~ t120 + t720 + t19 + t18", hidden = c(5), data = uow_consumptions_inputs_norm_io_3_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_3_train_model_2, "uow_consumptions_inputs_norm_io_3_train_model_2", "Set 3", 1, "logistic", FALSE, "Default", uow_consumptions_inputs_norm_io_3_test, original_test_data)
 
 View(comparison_table)
 
 # Graphical representation - Best performed NN model
 par(mfrow=c(1,1))
-plot(data.matrix(original_test_data), get_predicted_data_from_nn_model(uow_consumptions_inputs_norm_io_2_train_model_1, uow_consumptions_inputs_norm_io_2_test), col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
+plot(data.matrix(original_test_data), get_predicted_data_from_nn_model(uow_consumptions_inputs_norm_io_1_train_model_1, uow_consumptions_inputs_norm_io_1_test), col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
 abline(a=0, b=1, h=90, v=90)
 
 plot(uow_consumptions_inputs_norm_io_2_train_model_1)
