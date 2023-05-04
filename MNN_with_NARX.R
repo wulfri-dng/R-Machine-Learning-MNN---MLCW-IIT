@@ -38,7 +38,7 @@ uow_consumptions_inputs_19th_norm <- as.data.frame(lapply(uow_consumptions_input
 uow_consumptions_inputs_20th_norm <- as.data.frame(lapply(uow_consumptions_inputs_20th, normalize))
 
 # Not normalized 20th hour data sets (For evaluations)
-original_train_data <- uow_consumptions_inputs_20th[1: 380,]
+original_train_data <- uow_consumptions_inputs_20th[8: 380,]
 original_test_data <- uow_consumptions_inputs_20th[381: 470,]
 
 original_train_data_min <- min(uow_consumptions_inputs_20th)
@@ -61,7 +61,6 @@ colnames(uow_consumptions_inputs_norm_io_2) <- c("original", "t120", "t420","t72
 uow_consumptions_inputs_norm_io_3 <- cbind(uow_consumptions_inputs_20th_norm, lag_20_1, lag_20_7, uow_consumptions_inputs_19th_norm, uow_consumptions_inputs_18th_norm)
 colnames(uow_consumptions_inputs_norm_io_3) <- c("original", "t120", "t720", "t19", "t18")
 
-View(uow_consumptions_inputs_norm_io_3)
 # Formatting time-delayed I/O metrics training data set removing N/As
 uow_consumptions_inputs_norm_io_1 <- uow_consumptions_inputs_norm_io_1[complete.cases(uow_consumptions_inputs_norm_io_1),]
 uow_consumptions_inputs_norm_io_2 <- uow_consumptions_inputs_norm_io_2[complete.cases(uow_consumptions_inputs_norm_io_2),]
@@ -97,16 +96,16 @@ get_predicted_data_from_nn_model <- function(model, testing_data) {
 insert_comparison_table_row <- function(model, model_name_str, training_data_set, hidden_layer_count, act_func, isLinear, algorithm, testing_data, actual_data) {
   predicted_data <- get_predicted_data_from_nn_model(model, testing_data)
   
-  # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
+  # RMSE evaluation
   rmse_value = calculate_rmse(data.matrix(actual_data), predicted_data)
   
-  # MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
+  # MAE evaluation
   mae_value = mae(data.matrix(actual_data), predicted_data)
   
-  # MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
+  # MAPE evaluation
   mape_value = calculate_mape(data.matrix(actual_data), predicted_data)
   
-  # sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
+  # sMAPE evaluation
   smape_value = smape(data.matrix(actual_data), predicted_data) * 100
   
   comparison_table[nrow(comparison_table) + 1,] <<- c(model_name_str, rmse_value, mae_value, mape_value, smape_value, training_data_set, hidden_layer_count, act_func, isLinear, algorithm)
@@ -115,7 +114,7 @@ insert_comparison_table_row <- function(model, model_name_str, training_data_set
 # NN model - 1 (1st train set)
 uow_consumptions_inputs_norm_io_1_train_model_1 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t19 + t18", hidden = c(4, 2, 2), data = uow_consumptions_inputs_norm_io_1_train, linear.output = TRUE)
 # Insert data into comparison table
-insert_comparison_table_row(uow_consumptions_inputs_norm_io_1_train_model_1, "uow_consumptions_inputs_norm_io_1_train_model_1", "Set 1", 3, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_1_test, original_test_data)
+insert_comparison_table_row(uow_consumptions_inputs_norm_io_1_train_model_1, "uow_consumptions_inputs_norm_io_1_train_model_1", "Set 1", 3, "None", TRUE, "Default", uow_consumptions_inputs_norm_io_1_test, original_train_data)
 
 # NN model - 2 (1st train set)
 uow_consumptions_inputs_norm_io_1_train_model_2 <- neuralnet("original ~ t120 + t220 + t320 + t420 + t720 + t19 + t18", hidden = c(5, 3), data = uow_consumptions_inputs_norm_io_1_train, act.fct = "logistic", stepmax=1e7, linear.output = FALSE)
@@ -143,5 +142,3 @@ View(comparison_table)
 par(mfrow=c(1,1))
 plot(data.matrix(original_test_data), get_predicted_data_from_nn_model(uow_consumptions_inputs_norm_io_1_train_model_1, uow_consumptions_inputs_norm_io_1_test), col='red', main='Real vs predicted NN', pch = 18, cex = 0.7)
 abline(a=0, b=1, h=90, v=90)
-
-plot(uow_consumptions_inputs_norm_io_2_train_model_1)
