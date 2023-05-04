@@ -1,7 +1,7 @@
 library(readxl) # readxl package used to import excel files
 library(dplyr)
 library(neuralnet)
-library(Metrics) # For MAE evaluation
+library(Metrics) # For MAE/ sMAPE evaluation
 
 uow_consumptions <- read_excel("D:\\Coding Area\\University Projects\\Courseworks\\R-Machine-Learning-MNN---MLCW-IIT\\uow_consumption.xlsx")
 
@@ -82,10 +82,6 @@ uow_consumptions_inputs_20th_norm_io_4_test <- uow_consumptions_inputs_20th_norm
 # ----------------- NN Implementation -----------------
 
 # ---- Train NN models ----
-
-# https://www.rdocumentation.org/packages/neuralnet/versions/1.44.2/topics/neuralnet
-# https://towardsdatascience.com/how-to-choose-the-right-activation-function-for-neural-networks-3941ff0e6f9c
-
 # Create the comparison table
 columns = c("Model Name", "RMSE", "MAE", "MAPE", "sMAPE", "Training data set","Hidden layers", "Activation function", "Linear", "Algorithm") 
 comparison_table <- data.frame(matrix(nrow = 0, ncol = length(columns))) 
@@ -95,7 +91,6 @@ get_predicted_data_from_nn_model <- function(model, testing_data) {
   # Test NN model and un-normalize predicted data
   model_result <- neuralnet::compute(model, testing_data)
   predicted_data <- unnormalize(model_result$net.result, original_train_data_min, original_train_data_max)
-  
   return(predicted_data)
 }
 
@@ -103,16 +98,16 @@ get_predicted_data_from_nn_model <- function(model, testing_data) {
 insert_comparison_table_row <- function(model, model_name_str, training_data_set, hidden_layer_count, act_func, isLinear, algorithm, testing_data, actual_data) {
   predicted_data <- get_predicted_data_from_nn_model(model, testing_data)
   
-  # RMSE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-root-mean-square-error-rmse-in-r/
+  # RMSE evaluation
   rmse_value = calculate_rmse(data.matrix(actual_data), predicted_data)
   
-  # MAE evaluation https://www.r-bloggers.com/2021/07/how-to-calculate-mean-absolute-error-in-r/
+  # MAE evaluation
   mae_value = mae(data.matrix(actual_data), predicted_data)
   
-  # MAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-mean-absolute-percentage-error-mape-in-r/
+  # MAPE evaluation 
   mape_value = calculate_mape(data.matrix(actual_data), predicted_data)
   
-  # sMAPE evaluation https://www.r-bloggers.com/2021/08/how-to-calculate-smape-in-r/
+  # sMAPE evaluation
   smape_value = smape(data.matrix(actual_data), predicted_data)
   
   comparison_table[nrow(comparison_table) + 1,] <<- c(model_name_str, rmse_value, mae_value, mape_value, smape_value, training_data_set, hidden_layer_count, act_func, isLinear, algorithm)
@@ -173,7 +168,7 @@ insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_3_train_model_4
 
 # NN model - 14 (4th train set)
 uow_consumptions_inputs_20th_norm_io_4_train_model_1 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(3), data = uow_consumptions_inputs_20th_norm_io_4_train, linear.output = TRUE)
-insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_4_train_model_1, "uow_consumptions_inputs_20th_norm_io_4_train_model_1", "Set 4", 1, "None", FALSE, "Default", uow_consumptions_inputs_20th_norm_io_4_test, original_test_data)
+insert_comparison_table_row(uow_consumptions_inputs_20th_norm_io_4_train_model_1, "uow_consumptions_inputs_20th_norm_io_4_train_model_1", "Set 4", 1, "None", TRUE, "Default", uow_consumptions_inputs_20th_norm_io_4_test, original_test_data)
 
 # NN model - 15 (4th train set)
 uow_consumptions_inputs_20th_norm_io_4_train_model_2 <- neuralnet(original ~ t1 + t2 + t3, hidden = c(2, 2), data = uow_consumptions_inputs_20th_norm_io_4_train, act.fct = "tanh", stepmax=1e7, linear.output = FALSE)
